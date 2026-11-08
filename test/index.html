@@ -1073,7 +1073,7 @@
         pe.textContent = r.emailSent
           ? `📧 אישור עם כל הפרטים נשלח ל-${f.email}`
           : '⚠️ לא הצלחנו לשלוח אימייל אישור, אבל ההזמנה נשמרה.';
-        const okCancel = /^https:\/\/script\.google\.com\/[^\s"'<>]+$/.test(r.cancelUrl || '');
+        const okCancel = /^https:\/\/(script\.google\.com|barsik22\.github\.io)\/[^\s"'<>]+$/.test(r.cancelUrl || '');
         if (okCancel) $('payCancelLink').href = r.cancelUrl;
         $('payCancel').hidden = !okCancel;
         $('payMsg').textContent = r.message;
