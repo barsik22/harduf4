@@ -379,6 +379,10 @@
       color: var(--err);
       font-weight: 700;
     }
+    .page-warn { margin: 12px 0 0; }
+    .page-warn ul { list-style: none; margin: 6px 0 0; padding: 0; }
+    .page-warn li { display: flex; gap: 8px; margin-bottom: 6px; }
+    .page-warn li .ic { flex: none; }
     .dlg-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
     .dlg-actions .submit { margin-top: 14px; }
     .pay {
@@ -415,6 +419,10 @@
     <section class="card">
       <h2><span class="chip c2">📋</span>איך מזמינים?</h2>
       <ol class="steps" id="steps"></ol>
+      <div class="warn page-warn" id="pageWarn" role="note" hidden>
+        <b>⚠️ שימו לב</b>
+        <ul id="pageWarnList"></ul>
+      </div>
       <p class="note"><a href="#rules" id="rulesJump">לתקנון בתחתית הדף ↓</a></p>
     </section>
 
@@ -694,6 +702,13 @@
 
       // הוראות בראש הדף
       (cfg.instructions || []).forEach((t) => $('steps').append(el('li', null, t)));
+      // אזהרות מתחת להוראות – אייקון ליד כל שורה
+      (cfg.warnings || []).forEach((w) => {
+        const li = el('li');
+        li.append(el('span', 'ic', w.icon), el('span', null, w.text));
+        $('pageWarnList').append(li);
+      });
+      $('pageWarn').hidden = !(cfg.warnings || []).length;
 
       // התקנון המלא – מסמך חיצוני; רק קישור https מהגדרות השרת
       const termsOk = /^https:\/\/[^\s"'<>]+$/.test(cfg.termsUrl || '');
