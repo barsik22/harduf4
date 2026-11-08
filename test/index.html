@@ -387,6 +387,7 @@
     .pay .small { font-size: .88rem; color: var(--muted); margin-top: 10px; }
     .pay .submit { margin-top: 12px; }
     .cancel-note { font-size: .9rem; color: var(--muted); }
+    .thanks .again { text-align: center; margin: 14px 0 0; }
     .confirm-note { margin: 0 0 12px; }
     .confirm-note .who { display: block; font-weight: 500; margin-top: 4px; }
     .confirm-note a { color: inherit; font-weight: 700; }
@@ -538,6 +539,26 @@
       <a class="doc-link" id="rulesDocLink" target="_blank" rel="noopener noreferrer">📄 לקריאת התקנון המלא – לחצו כאן</a>
     </section>
 
+    <section class="card thanks" id="thanks" aria-labelledby="payTitle" hidden>
+      <h2 id="payTitle"><span class="chip c3">🎉</span>ההזמנה נקלטה!</h2>
+      <p id="payMsg"></p>
+      <p id="payEmail" hidden></p>
+      <div class="warn confirm-note" id="confirmNote" role="note" hidden>
+        <span id="confirmText"></span>
+        <span class="who"><span id="contactName"></span> · <a id="contactPhone" dir="ltr"></a></span>
+      </div>
+      <p class="cancel-note" id="payCancel" hidden>צריכים לבטל? <a id="payCancelLink" target="_blank" rel="noopener noreferrer">לביטול ההזמנה</a> (הקישור נשלח גם באימייל)</p>
+      <div class="pay">
+        <p><b id="payTotal">להשלמת ההזמנה יש לשלם עבור החדר:</b></p>
+        <ul id="payLines"></ul>
+        <p class="small" id="payNote"></p>
+        <a class="submit" id="payLink" target="_blank" rel="noopener noreferrer">💳 לתשלום ב-PayBox</a>
+        <p class="small" id="payBank"></p>
+        <p class="small" id="payDeposit"></p>
+      </div>
+      <p class="note again"><a href="" id="bookAgain">להזמנה נוספת (הזמנה חדשה, לא חוזרת על זו)</a></p>
+    </section>
+
     <p class="foot" id="foot"></p>
   </main>
 
@@ -556,29 +577,6 @@
     </div>
   </dialog>
 
-  <dialog class="dlg" id="payDlg" aria-labelledby="payTitle">
-    <div class="dlg-body">
-      <h2 id="payTitle"><span class="chip c3">🎉</span>ההזמנה נקלטה!</h2>
-      <p id="payMsg"></p>
-      <p id="payEmail" hidden></p>
-      <div class="warn confirm-note" id="confirmNote" role="note" hidden>
-        <span id="confirmText"></span>
-        <span class="who"><span id="contactName"></span> · <a id="contactPhone" dir="ltr"></a></span>
-      </div>
-      <p class="cancel-note" id="payCancel" hidden>צריכים לבטל? <a id="payCancelLink" target="_blank" rel="noopener noreferrer">לביטול ההזמנה</a> (הקישור נשלח גם באימייל)</p>
-      <div class="pay">
-        <p><b id="payTotal">להשלמת ההזמנה יש לשלם עבור החדר:</b></p>
-        <ul id="payLines"></ul>
-        <p class="small" id="payNote"></p>
-        <a class="submit" id="payLink" target="_blank" rel="noopener noreferrer">💳 לתשלום ב-PayBox</a>
-        <p class="small" id="payBank"></p>
-        <p class="small" id="payDeposit"></p>
-      </div>
-      <div class="dlg-actions">
-        <button type="button" class="ghost" id="closePay">סגירה</button>
-      </div>
-    </div>
-  </dialog>
 
   <script>
     const $ = (id) => document.getElementById(id);
@@ -1040,7 +1038,17 @@
     }));
     $('cancelTerms').addEventListener('click', () => closeDlg($('termsDlg')));
     $('termsDlg').addEventListener('cancel', (e) => { if (S.saving) e.preventDefault(); });
-    $('closePay').addEventListener('click', () => closeDlg($('payDlg')));
+    // "להזמנה נוספת" – טוען את הדף מחדש, נקי
+    $('bookAgain').addEventListener('click', (e) => { e.preventDefault(); location.reload(); });
+
+    /** אחרי הזמנה מוצלחת: נשאר רק עמוד התודה (בלי טופס), כדי שלא יזמינו שוב בטעות. */
+    function showThanks() {
+      [...document.querySelector('main').children].forEach((n) => {
+        if (!n.classList.contains('hero') && n.id !== 'thanks' && n.id !== 'foot') n.hidden = true;
+      });
+      $('thanks').hidden = false;
+      window.scrollTo(0, 0);
+    }
 
     $('confirmBook').addEventListener('click', async () => {
       if (!bothChecked() || S.saving) return;
@@ -1088,11 +1096,11 @@
         $('payLines').innerHTML = '';
         pr.lines.forEach((l) => $('payLines').append(el('li', null, l)));
         if (r.specialNote) $('payLines').append(el('li', 'special-note', '📜 ' + r.specialNote));
-        openDlg($('payDlg'));
-      } else {
-        showMsg('err', r.message);
+        showThanks();
+        return;
       }
-      // רענון – מציג את ההזמנה החדשה או את מה שתפס את השעה
+      showMsg('err', r.message);
+      // רענון – מציג את מה שתפס את השעה
       delete S.months[monthKey()];
       loadMonth(S.viewYm);
       loadDay();
