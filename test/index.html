@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>הרדוף 4 · הזמנת חדר דיירים</title>
+  <base target="_top">
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* הרדוף 4 – פלטה עליזה: ורוד הרדוף, כתום שמש, ירוק עלים */
+    :root {
+      --bg: #fff7f0;
+      --bg-blob1: #ffe3ef;
+      --bg-blob2: #fff1c9;
+      --card: #ffffff;
+      --text: #2b2140;
+      --muted: #75688a;
+      --border: #f2dfe8;
+      --accent: #e5397f;
+      --accent-2: #ff8a3d;
+      --accent-text: #ffffff;
+      --free: #d8f5e5;
+      --free-text: #0f6b41;
+      --partial: #ffeaa6;
+      --partial-text: #7a5a00;
+      --busy: #ff6b6b;
+      --busy-soft: #ffe1e1;
+      --past: #e3dde8;
+      --sel: #a855f7;
+      --ok: #0f7a4a;
+      --ok-bg: #dcf7e8;
+      --err: #b4233f;
+      --err-bg: #ffe4ea;
+      --chip1: #ffe0ec;
+      --chip2: #fff0c2;
+      --chip3: #d8f5e5;
+      --shadow: 0 6px 20px rgba(229, 57, 127, .08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1424;
+        --bg-blob1: #3a1830;
+        --bg-blob2: #33281a;
+        --card: #241c31;
+        --text: #f6eefb;
+        --muted: #bcaecd;
+        --border: #3d3150;
+        --accent: #ff5c9d;
+        --accent-2: #ff9f5a;
+        --accent-text: #ffffff;
+        --free: #1f4434;
+        --free-text: #8ff0bb;
+        --partial: #4a3c17;
+        --partial-text: #ffd978;
+        --busy: #ff7b7b;
+        --busy-soft: #45232a;
+        --past: #3a3147;
+        --sel: #c084fc;
+        --ok: #7ee2ad;
+        --ok-bg: #173527;
+        --err: #ff9fb3;
+        --err-bg: #3e1a26;
+        --chip1: #4a2039;
+        --chip2: #47391c;
+        --chip3: #1f3d33;
+        --shadow: 0 6px 20px rgba(0, 0, 0, .25);
+      }
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html, body { margin: 0; }
+    body {
+      background:
+        radial-gradient(circle at 100% 0, var(--bg-blob1) 0, transparent 45%),
+        radial-gradient(circle at 0 40%, var(--bg-blob2) 0, transparent 40%),
+        var(--bg);
+      background-attachment: fixed;
+      color: var(--text);
+      font: 16px/1.5 Heebo, "Segoe UI", Arial, sans-serif;
+      -webkit-text-size-adjust: 100%;
+      min-height: 100vh;
+    }
+    .wrap { max-width: 560px; margin: 0 auto; padding: 16px 16px 40px; }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 18px 0;
+      margin-bottom: 16px;
+      border-radius: 22px;
+      color: #fff;
+      background: linear-gradient(135deg, #ff6fa8 0%, #ff8f6b 55%, #ffc65c 100%);
+      box-shadow: 0 10px 28px rgba(255, 111, 168, .35);
+      overflow: hidden;
+    }
+    .hero-text { flex: 1; min-width: 0; padding-bottom: 18px; }
+    .hero .kicker {
+      display: inline-block;
+      font-size: .8rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, .25);
+      border-radius: 999px;
+      padding: 2px 10px;
+      margin-bottom: 6px;
+    }
+    .hero .test-badge { background: #2b2140; color: #ffd84d; }
+    .hero h1 { font-size: 2.1rem; line-height: 1.1; margin: 0; letter-spacing: -.5px; text-shadow: 0 2px 8px rgba(120, 20, 60, .25); }
+    .hero h1 + p { font-size: 1.1rem; font-weight: 700; margin: 4px 0 6px; }
+    .hero .lead { font-size: .9rem; margin: 0; opacity: .95; }
+    .hero svg { flex: none; width: 128px; height: auto; display: block; align-self: flex-end; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+    }
+    h2 { font-size: 1.1rem; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+    .chip {
+      display: inline-grid;
+      place-items: center;
+      flex: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+    .chip.c1 { background: var(--chip1); }
+    .chip.c2 { background: var(--chip2); }
+    .chip.c3 { background: var(--chip3); }
+    label { display: block; font-weight: 500; margin: 12px 0 6px; }
+    label:first-child, h2 + label { margin-top: 0; }
+    select, input {
+      width: 100%;
+      font: inherit;
+      font-size: 16px; /* מונע זום אוטומטי ב-iOS */
+      color: var(--text);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      min-height: 46px;
+    }
+    select:focus, input:focus, button:focus-visible, a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+    select:disabled { opacity: .6; }
+    input[type="tel"], input[type="email"] { text-align: right; }
+    .opt { font-weight: 400; color: var(--muted); font-size: .9rem; }
+    .iconbtn {
+      flex: none;
+      width: 42px;
+      height: 42px;
+      font-size: 1.15rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .iconbtn:disabled { opacity: .3; cursor: default; }
+    .row { display: flex; gap: 12px; }
+    .row > div { flex: 1; min-width: 0; }
+    .row > .apt { flex: 0 0 34%; }
+
+    /* לוח שנה */
+    #roomWrap { margin-bottom: 14px; }
+    .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .cal-head .title { font-weight: 700; font-size: 1.1rem; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+    .cal-grid .wd { text-align: center; font-size: .78rem; color: var(--muted); font-weight: 500; }
+    .day {
+      position: relative;
+      aspect-ratio: 1;
+      min-height: 38px;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      font: inherit;
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--text);
+      background: var(--past);
+      cursor: pointer;
+      transition: transform .1s;
+    }
+    .day:not(:disabled):active { transform: scale(.94); }
+    .day.free { background: var(--free); color: var(--free-text); }
+    .day.partial { background: var(--partial); color: var(--partial-text); }
+    .day.full { background: var(--busy-soft); color: var(--busy); text-decoration: line-through; }
+    .day.closed, .day.past, .day.out, .day.soon { background: transparent; color: var(--muted); opacity: .45; }
+    .note { margin: 8px 0 0; font-size: .88rem; color: var(--muted); }
+    .price-est {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--chip2);
+      font-weight: 500;
+    }
+    .price-est:empty { display: none; }
+    .price-est small { display: block; font-weight: 400; color: var(--muted); }
+    .special-note { margin-top: 6px; color: #b4233f; font-weight: 700; }
+    .terms h4 { margin: 12px 0 4px; font-size: .98rem; }
+    .terms h4:first-child { margin-top: 0; }
+    .terms ol { margin: 0; padding-right: 20px; }
+    .agree.decl { margin-top: 10px; }
+    .steps { margin: 0; padding-right: 22px; }
+    .steps li { margin-bottom: 6px; padding-right: 2px; }
+    .steps li::marker { color: var(--accent); font-weight: 700; }
+    .note a { color: var(--accent); font-weight: 500; text-decoration: none; }
+    .day.loading { background: var(--past); color: transparent; }
+    .day:disabled { cursor: default; }
+    .day.today::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      transform: translateX(-50%);
+    }
+    .day.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(229, 57, 127, .22); }
+    .cal-note { margin-top: 10px; color: var(--err); font-size: .9rem; }
+
+    .timeline { padding: 4px 14px 0; margin-bottom: 12px; }
+    .track {
+      position: relative;
+      height: 26px;
+      background: var(--free);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .seg { position: absolute; top: 0; bottom: 0; }
+    .seg.busy { background: var(--busy); }
+    .seg.past { background: var(--past); }
+    .seg.sel { background: var(--sel); opacity: .45; outline: 2px solid var(--sel); outline-offset: -2px; }
+    .ticks { position: relative; height: 18px; font-size: .72rem; color: var(--muted); }
+    .ticks span { position: absolute; top: 2px; transform: translateX(50%); }
+    .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .8rem; color: var(--muted); margin-top: 8px; }
+    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-left: 5px; vertical-align: -1px; }
+
+    .bookings { list-style: none; margin: 0; padding: 0; }
+    .bookings li {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+      padding: 9px 0;
+      border-top: 1px solid var(--border);
+    }
+    .bookings li:first-child { border-top: 0; }
+    .bookings .time { font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .bookings .who { color: var(--muted); overflow-wrap: anywhere; }
+    .bookings li.empty { color: var(--muted); }
+
+    /* מלכודת בוטים – מוסתר מבני אדם */
+    .hp {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .submit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: 18px;
+      min-height: 50px;
+      font: inherit;
+      font-weight: 700;
+      font-size: 1.05rem;
+      border: 0;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: var(--accent-text);
+      box-shadow: 0 6px 16px rgba(229, 57, 127, .3);
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .1s;
+    }
+    .submit:active { transform: scale(.98); }
+    .submit:disabled { opacity: .5; cursor: default; box-shadow: none; }
+    .ghost {
+      width: 100%;
+      min-height: 46px;
+      font: inherit;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .ghost:disabled { opacity: .5; cursor: default; }
+    .msg { margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-weight: 500; }
+    .msg.ok { background: var(--ok-bg); color: var(--ok); }
+    .msg.err { background: var(--err-bg); color: var(--err); }
+    .foot { text-align: center; color: var(--muted); font-size: .85rem; margin: 6px 0 0; }
+    .loading { opacity: .55; transition: opacity .15s; }
+
+    /* חלונות קופצים */
+    .dlg {
+      width: min(520px, calc(100vw - 24px));
+      max-height: calc(100vh - 24px);
+      padding: 0;
+      border: 0;
+      border-radius: 20px;
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+    }
+    .dlg::backdrop { background: rgba(43, 33, 64, .55); }
+    .dlg-body { padding: 18px; }
+    .dlg-summary {
+      background: var(--chip1);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+    .terms {
+      max-height: 46vh;
+      overflow-y: auto;
+      margin: 0 0 14px;
+      padding: 12px 30px 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg);
+      font-size: .95rem;
+    }
+    .terms li { margin-bottom: 8px; }
+    .terms li:last-child { margin-bottom: 0; }
+    .doc-link {
+      display: block;
+      text-align: center;
+      background: var(--chip1);
+      border: 2px dashed var(--accent);
+      border-radius: 12px;
+      padding: 12px;
+      margin: 0 0 6px;
+      font-weight: 700;
+      color: inherit;
+      text-decoration: none;
+    }
+    .agree:has(input:disabled) { opacity: .55; cursor: not-allowed; }
+    .agree { display: flex; gap: 10px; align-items: flex-start; margin: 0; cursor: pointer; }
+    .agree input { flex: none; width: 22px; height: 22px; min-height: 0; margin: 2px 0 0; padding: 0; accent-color: var(--accent); }
+    .agree.cleaning {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--chip3);
+      font-weight: 500;
+    }
+    .warn {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--err-bg);
+      color: var(--err);
+      font-weight: 700;
+    }
+    .dlg-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+    .dlg-actions .submit { margin-top: 14px; }
+    .pay {
+      background: var(--chip2);
+      border-radius: 14px;
+      padding: 14px;
+      margin: 12px 0 4px;
+    }
+    .pay p { margin: 0 0 6px; }
+    .pay ul { margin: 0 0 4px; padding-right: 20px; font-weight: 700; }
+    .pay .small { font-size: .88rem; color: var(--muted); margin-top: 10px; }
+    .pay .submit { margin-top: 12px; }
+    .cancel-note { font-size: .9rem; color: var(--muted); }
+    .confirm-note { margin: 0 0 12px; }
+    .confirm-note .who { display: block; font-weight: 500; margin-top: 4px; }
+    .confirm-note a { color: inherit; font-weight: 700; }
+    .cancel-note a { color: var(--err); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <div class="hero-text">
+        <span class="kicker">🌸 ברוכים הבאים</span>
+        <span class="kicker test-badge" id="testBadge" hidden>🧪 סביבת בדיקה</span>
+        <h1>הרדוף 4</h1>
+        <p>הזמנת חדר דיירים</p>
+        <p class="lead">בחרו יום פנוי ושעות – וההזמנה נרשמת מיד ביומן.</p>
+      </div>
+      <svg viewBox="0 0 160 150" aria-hidden="true">
+        <defs>
+          <g id="fl">
+            <circle cx="0" cy="-3.4" r="3" fill="#ff4f93"/>
+            <circle cx="3.2" cy="-1" r="3" fill="#ff4f93"/>
+            <circle cx="2" cy="2.8" r="3" fill="#ff4f93"/>
+            <circle cx="-2" cy="2.8" r="3" fill="#ff4f93"/>
+            <circle cx="-3.2" cy="-1" r="3" fill="#ff4f93"/>
+            <circle r="1.6" fill="#ffd84d"/>
+          </g>
+        </defs>
+        <circle cx="132" cy="24" r="14" fill="#fff3a6"/>
+        <circle cx="132" cy="24" r="20" fill="#fff3a6" opacity=".35"/>
+        <!-- הבניין -->
+        <rect x="34" y="26" width="84" height="124" rx="8" fill="#ffffff"/>
+        <rect x="28" y="20" width="96" height="12" rx="6" fill="#ffd1e3"/>
+        <g fill="#ffd84d">
+          <rect x="46" y="42" width="16" height="15" rx="3"/>
+          <rect x="90" y="42" width="16" height="15" rx="3"/>
+          <rect x="68" y="66" width="16" height="15" rx="3"/>
+          <rect x="46" y="90" width="16" height="15" rx="3"/>
+        </g>
+        <g fill="#bfe6ff">
+          <rect x="68" y="42" width="16" height="15" rx="3"/>
+          <rect x="46" y="66" width="16" height="15" rx="3"/>
+          <rect x="90" y="66" width="16" height="15" rx="3"/>
+          <rect x="90" y="90" width="16" height="15" rx="3"/>
+        </g>
+        <path d="M64 150v-26a12 12 0 0 1 24 0v26z" fill="#e5397f"/>
+        <circle cx="76" cy="100" r="9" fill="#ffd84d"/>
+        <text x="76" y="104.5" text-anchor="middle" font-size="13" font-weight="700" fill="#b0245e" font-family="Heebo, Arial, sans-serif">4</text>
+        <!-- שיחי הרדוף -->
+        <ellipse cx="30" cy="146" rx="30" ry="16" fill="#3fbf7f"/>
+        <ellipse cx="130" cy="146" rx="32" ry="17" fill="#3fbf7f"/>
+        <use href="#fl" x="16" y="138"/>
+        <use href="#fl" x="32" y="133"/>
+        <use href="#fl" x="44" y="141"/>
+        <use href="#fl" x="118" y="136"/>
+        <use href="#fl" x="134" y="131"/>
+        <use href="#fl" x="148" y="140"/>
+      </svg>
+    </header>
+
+    <section class="card">
+      <h2><span class="chip c2">📋</span>איך מזמינים?</h2>
+      <ol class="steps" id="steps"></ol>
+      <p class="note"><a href="#rules" id="rulesJump">לתקנון בתחתית הדף ↓</a></p>
+    </section>
+
+    <section class="card">
+      <h2><span class="chip c1">📅</span>בחרו תאריך</h2>
+
+      <!-- בחירת חדר מוצגת רק כשמוגדר יותר מחדר אחד -->
+      <div id="roomWrap" hidden>
+        <label for="room">חדר</label>
+        <select id="room"></select>
+      </div>
+
+      <div class="cal-head">
+        <button type="button" class="iconbtn" id="prevMonth" aria-label="חודש קודם" disabled>→</button>
+        <div class="title" id="monthTitle" aria-live="polite">טוען…</div>
+        <button type="button" class="iconbtn" id="nextMonth" aria-label="חודש הבא" disabled>←</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="legend">
+        <span><i style="background: var(--free)"></i>פנוי</span>
+        <span><i style="background: var(--partial)"></i>יש הזמנות, נשארו שעות</span>
+        <span><i style="background: var(--busy-soft)"></i>תפוס</span>
+        <span><i style="background: var(--past)"></i>סגור / עבר / פחות משבוע</span>
+      </div>
+      <div class="cal-note" id="calNote" hidden></div>
+      <input type="hidden" id="date">
+    </section>
+
+    <section class="card" id="daySection">
+      <h2><span class="chip c2">🕒</span><span id="dayHead">—</span></h2>
+      <div class="timeline" id="timeline"></div>
+      <ul class="bookings" id="bookings"><li class="empty">טוען…</li></ul>
+    </section>
+
+    <form class="card" id="form" novalidate>
+      <h2><span class="chip c3">✨</span>הזמנה חדשה</h2>
+      <div class="row">
+        <div>
+          <label for="start">שעת התחלה</label>
+          <select id="start" disabled></select>
+        </div>
+        <div>
+          <label for="end">שעת סיום</label>
+          <select id="end" disabled></select>
+        </div>
+      </div>
+      <p class="note" id="musicNote"></p>
+      <div class="price-est" id="priceEst" aria-live="polite"></div>
+
+      <label for="eventType">אופי האירוע</label>
+      <input id="eventType" list="eventTypes" maxlength="60" placeholder="לדוגמה: יום הולדת" required>
+      <datalist id="eventTypes"></datalist>
+
+      <label for="name">שם מלא</label>
+      <input id="name" autocomplete="name" maxlength="60" required>
+
+      <div class="row">
+        <div class="apt">
+          <label for="apartment">מספר דירה</label>
+          <input id="apartment" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="1–75" required>
+        </div>
+        <div>
+          <label for="phone">טלפון</label>
+          <input id="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" maxlength="20"
+                 placeholder="050-1234567" required>
+        </div>
+      </div>
+
+      <label for="email">אימייל לקבלת אישור <span class="opt" id="emailOpt">(לא חובה)</span></label>
+      <input id="email" type="email" inputmode="email" autocomplete="email" dir="ltr" maxlength="254"
+             placeholder="name@gmail.com">
+
+      <label class="agree cleaning"><input type="checkbox" id="cleaning"> <span id="cleaningLabel">אני רוצה ניקיון (על ידי המנקה)</span></label>
+      <div class="warn" id="cleaningNote" role="note" hidden></div>
+
+      <div class="hp" aria-hidden="true">
+        <label for="website">אתר</label>
+        <input id="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <button type="submit" class="submit" id="submit" disabled>להזמנת החדר</button>
+      <div class="msg" id="msg" role="status" aria-live="polite" hidden></div>
+    </form>
+
+    <section class="card" id="rules">
+      <h2><span class="chip c1">📜</span>תקנון</h2>
+      <a class="doc-link" id="rulesDocLink" target="_blank" rel="noopener noreferrer">📄 לקריאת התקנון המלא – לחצו כאן</a>
+    </section>
+
+    <p class="foot" id="foot"></p>
+  </main>
+
+  <dialog class="dlg" id="termsDlg" aria-labelledby="termsTitle">
+    <div class="dlg-body">
+      <h2 id="termsTitle"><span class="chip c2">📜</span>תקנון השכרת חדר הדיירים</h2>
+      <div class="dlg-summary" id="termsSummary"></div>
+      <a class="doc-link" id="termsLink" target="_blank" rel="noopener noreferrer">📄 לקריאת התקנון המלא – לחצו כאן</a>
+      <p class="note" id="termsHint">יש לפתוח את התקנון לפני האישור.</p>
+      <label class="agree"><input type="checkbox" id="agree" disabled> קראתי את התקנון ואני מסכים/ה לכל התנאים</label>
+      <label class="agree decl"><input type="checkbox" id="declare"> <span id="declText"></span></label>
+      <div class="dlg-actions">
+        <button type="button" class="submit" id="confirmBook" disabled>אני מסכים/ה – הזמינו</button>
+        <button type="button" class="ghost" id="cancelTerms">ביטול</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="dlg" id="payDlg" aria-labelledby="payTitle">
+    <div class="dlg-body">
+      <h2 id="payTitle"><span class="chip c3">🎉</span>ההזמנה נקלטה!</h2>
+      <p id="payMsg"></p>
+      <p id="payEmail" hidden></p>
+      <div class="warn confirm-note" id="confirmNote" role="note" hidden>
+        <span id="confirmText"></span>
+        <span class="who"><span id="contactName"></span> · <a id="contactPhone" dir="ltr"></a></span>
+      </div>
+      <p class="cancel-note" id="payCancel" hidden>צריכים לבטל? <a id="payCancelLink" target="_blank" rel="noopener noreferrer">לביטול ההזמנה</a> (הקישור נשלח גם באימייל)</p>
+      <div class="pay">
+        <p><b id="payTotal">להשלמת ההזמנה יש לשלם עבור החדר:</b></p>
+        <ul id="payLines"></ul>
+        <p class="small" id="payNote"></p>
+        <a class="submit" id="payLink" target="_blank" rel="noopener noreferrer">💳 לתשלום ב-PayBox</a>
+        <p class="small" id="payBank"></p>
+        <p class="small" id="payDeposit"></p>
+      </div>
+      <div class="dlg-actions">
+        <button type="button" class="ghost" id="closePay">סגירה</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const S = {
+      cfg: null, busy: [], minStart: 0, closed: false, busyLoading: false,
+      seq: 0, mseq: 0, months: {}, viewYm: '', saving: false,
+    };
+    const BOOKABLE = new Set(['free', 'partial']);
+    const STATUS_LABEL = {
+      free: 'פנוי', partial: 'יש הזמנות, נשארו שעות פנויות', full: 'תפוס',
+      closed: 'סגור', past: 'עבר', soon: 'פחות משבוע מראש – לא ניתן להזמין',
+      out: 'מחוץ לטווח ההזמנה', loading: '',
+    };
+
+    // ---------- עזרים ----------
+    // באתר החיצוני deploy.js ממלא כאן את כתובת ה-API; בתוך Apps Script נשאר ריק
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzXDiYX2l8PM6m6oT3aUiSpIcdeAfnEsoyEmYjaXEFrKd23GSIck-RQ4P0XaVD9RfZcRA/exec';
+    function api(fn, ...args) {
+      if (window.google && google.script && google.script.run) {
+        return new Promise((resolve, reject) =>
+          google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[fn](...args));
+      }
+      // בלי עוגיות – כך החשבונות המחוברים בדפדפן לא משפיעים
+      return fetch(API_URL, {
+        method: 'POST', credentials: 'omit', redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ fn, args }),
+      }).then((r) => r.json()).then((r) => {
+        if (!r.ok) throw new Error(r.error || 'server');
+        return r.result;
+      });
+    }
+    const pad = (n) => String(n).padStart(2, '0');
+    const hhmm = (m) => pad(Math.floor(m / 60)) + ':' + pad(m % 60);
+    function addDays(ds, n) {
+      const [y, m, d] = ds.split('-').map(Number);
+      return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+    }
+    function addMonths(ym, n) {
+      const [y, m] = ym.split('-').map(Number);
+      return new Date(Date.UTC(y, m - 1 + n, 1)).toISOString().slice(0, 7);
+    }
+    const weekday = (ds) => new Date(ds + 'T12:00:00Z').getUTCDay();
+    const isFree = (s, e) => S.busy.every((b) => b.end <= s || b.start >= e);
+    function durLabel(m) {
+      const named = { 15: 'רבע שעה', 30: 'חצי שעה', 45: '45 דק׳', 60: 'שעה', 90: 'שעה וחצי', 120: 'שעתיים', 180: '3 שעות' };
+      if (named[m]) return named[m];
+      const h = Math.floor(m / 60), r = m % 60;
+      if (!h) return r + ' דק׳';
+      return r ? `${h}:${pad(r)} ש׳` : `${h} שעות`;
+    }
+    function dayTitle(ds) {
+      return new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })
+        .format(new Date(ds + 'T12:00:00Z'));
+    }
+    function el(tag, cls, text) {
+      const n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (text != null) n.textContent = text;
+      return n;
+    }
+    function showMsg(kind, text) {
+      const m = $('msg');
+      m.className = 'msg ' + kind;
+      m.textContent = text;
+      m.hidden = false;
+    }
+    const hideMsg = () => { $('msg').hidden = true; };
+    const store = {
+      get(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } },
+      set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+    };
+    function normPhone(raw) {
+      let p = String(raw).replace(/[\s\-().]/g, '');
+      if (p.startsWith('+972')) p = '0' + p.slice(4);
+      else if (p.startsWith('972')) p = '0' + p.slice(3);
+      return /^0\d{8,9}$/.test(p) ? p : '';
+    }
+    /** מספר דירה שלם בטווח הדירות בבניין; מחזיר '' אם לא תקין. */
+    function normApartment(raw) {
+      const s = String(raw).trim();
+      if (!/^\d{1,3}$/.test(s)) return '';
+      const n = Number(s);
+      return n >= S.cfg.aptMin && n <= S.cfg.aptMax ? String(n) : '';
+    }
+    // ₪ תמיד משמאל לסכום (בידוד שמאל-לימין)
+    const nis = (n) => '⁦₪' + n + '⁩';
+    /** אותו חישוב כמו price_ בשרת – להצגת הערכה בטופס. */
+    function estimate(minutes, cleaning) {
+      const p = S.cfg.pricing;
+      let total = p.BASE;
+      if (cleaning) total += p.CLEANING;
+      return { total };
+    }
+    function renderEstimate() {
+      const box = $('priceEst');
+      box.innerHTML = '';
+      const s = parseInt($('start').value, 10), e = parseInt($('end').value, 10);
+      if (isNaN(s) || isNaN(e)) return;
+      const est = estimate(e - s, $('cleaning').checked);
+      box.append(`💰 ${payLine(est.total)}`);
+      if (isSpecialDay($('date').value)) {
+        const note = document.createElement('div');
+        note.className = 'special-note';
+        note.textContent = '📜 ' + (S.cfg.specialDayNote || '');
+        box.append(note);
+      }
+    }
+    const payLine = (total) => `תשלום של ${nis(total)} על החדר יבוצע עד שבוע מראש.`;
+    /** שישי, שבת או חג – כמו isSpecialDay_ בשרת. */
+    function isSpecialDay(ds) {
+      if (!ds) return false;
+      if (Object.prototype.hasOwnProperty.call(S.cfg.holidays || {}, ds)) return true;
+      const [y, m, d] = ds.split('-').map(Number);
+      const dow = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+      return dow === 5 || dow === 6;
+    }
+    const EMAIL_RE = /^[a-z0-9._%+\-]+@[a-z0-9\-]+(\.[a-z0-9\-]+)*\.[a-z]{2,}$/;
+    // דפדפנים ישנים בלי <dialog>
+    function openDlg(d) { if (d.showModal) d.showModal(); else d.setAttribute('open', ''); }
+    function closeDlg(d) { if (d.close) d.close(); else d.removeAttribute('open'); }
+
+    // ---------- טעינה ----------
+    api('getAppConfig').then(async (cfg) => {
+      S.cfg = cfg;
+      const room = $('room');
+      cfg.rooms.forEach((r) => room.add(new Option(r.name, r.id)));
+      const lastRoom = store.get('room');
+      if (cfg.rooms.some((r) => r.id === lastRoom)) room.value = lastRoom;
+      $('roomWrap').hidden = cfg.rooms.length < 2;
+      $('testBadge').hidden = cfg.env === 'prod';
+
+      $('name').value = store.get('name');
+      $('apartment').value = store.get('apartment');
+      $('phone').value = store.get('phone');
+      $('email').value = store.get('email');
+      $('emailOpt').hidden = !!cfg.emailRequired;
+      const cleanFee = nis(cfg.pricing.CLEANING);
+      $('cleaningLabel').textContent = `אני רוצה ניקיון על ידי המנקה (תוספת ${cleanFee})`;
+      $('cleaningNote').textContent = `⚠️ תוספת ${cleanFee} לתשלום. ${cfg.cleaningNote || ''}`;
+      $('musicNote').textContent = '🔇 ' + (cfg.musicNote || '');
+      $('declText').textContent = cfg.declaration || '';
+      (cfg.eventTypes || []).forEach((t) => $('eventTypes').append(new Option(t)));
+
+      const days = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'];
+      const dayText = cfg.workDays.length === 7 ? 'כל ימות השבוע' : 'ימים ' + cfg.workDays.map((d) => days[d]).join(' ');
+      $('foot').textContent =
+        `🌸 הרדוף 4 · פתוח מ-${hhmm(cfg.workStart)} עד ${hhmm(cfg.workEnd)}, ${dayText} · ` +
+        `הזמנה לפחות ${cfg.minDaysAhead} ימים מראש`;
+
+      // הוראות בראש הדף
+      (cfg.instructions || []).forEach((t) => $('steps').append(el('li', null, t)));
+
+      // התקנון המלא – מסמך חיצוני; רק קישור https מהגדרות השרת
+      const termsOk = /^https:\/\/[^\s"'<>]+$/.test(cfg.termsUrl || '');
+      ['termsLink', 'rulesDocLink'].forEach((id) => {
+        if (termsOk) $(id).href = cfg.termsUrl; else $(id).hidden = true;
+      });
+      if (!termsOk) { $('agree').disabled = false; $('termsHint').hidden = true; }
+      setupPayment(cfg.payment || {});
+
+      await chooseFirstDay();
+    }).catch(() => {
+      $('monthTitle').textContent = '';
+      $('bookings').innerHTML = '';
+      $('bookings').append(el('li', 'empty', 'טעינת המערכת נכשלה. רעננו את הדף.'));
+    });
+
+    function setupPayment(p) {
+      const link = $('payLink');
+      // רק קישור https מהגדרות השרת
+      if (/^https:\/\/[^\s"'<>]+$/.test(p.URL || '')) link.href = p.URL;
+      else link.hidden = true;
+      $('payNote').textContent = p.NOTE || '';
+      $('payBank').textContent = p.BANK || '';
+      $('payDeposit').textContent = p.DEPOSIT || '';
+    }
+
+    /** טוען את החודש הנוכחי ובוחר את היום הפנוי הראשון (או בחודש הבא). */
+    async function chooseFirstDay() {
+      const thisMonth = S.cfg.today.slice(0, 7);
+      await loadMonth(thisMonth);
+      let first = firstBookable();
+      if (!first && thisMonth < S.cfg.maxDate.slice(0, 7)) {
+        await loadMonth(addMonths(thisMonth, 1));
+        first = firstBookable();
+      }
+      selectDate(first || S.cfg.today);
+    }
+
+    function firstBookable() {
+      const data = S.months[monthKey()];
+      if (!data) return '';
+      return Object.keys(data.days).sort().find((d) => BOOKABLE.has(data.days[d])) || '';
+    }
+
+    const monthKey = () => $('room').value + '|' + S.viewYm;
+
+    async function loadMonth(ym) {
+      S.viewYm = ym;
+      const key = monthKey();
+      const my = ++S.mseq;
+      $('calNote').hidden = true;
+      renderCalendar();
+      if (S.months[key]) return;
+      try {
+        const r = await api('getMonth', $('room').value, ym);
+        if (!r.ok) throw new Error(r.message);
+        S.months[key] = r;
+        if (my === S.mseq) renderCalendar();
+      } catch (e) {
+        if (my !== S.mseq) return;
+        const n = $('calNote');
+        n.textContent = e.message && /[֐-׿]/.test(e.message) ? e.message : 'טעינת לוח השנה נכשלה. רעננו את הדף.';
+        n.hidden = false;
+      }
+    }
+
+    function renderCalendar() {
+      const data = S.months[monthKey()];
+      const grid = $('calGrid');
+      grid.innerHTML = '';
+      ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'].forEach((w) => grid.append(el('div', 'wd', w)));
+
+      const [y, m] = S.viewYm.split('-').map(Number);
+      const first = S.viewYm + '-01';
+      const nDays = new Date(Date.UTC(y, m, 0)).getUTCDate();
+      for (let i = 0; i < weekday(first); i++) grid.append(el('div'));
+      for (let d = 1; d <= nDays; d++) {
+        const ds = `${S.viewYm}-${pad(d)}`;
+        const st = data ? (data.days[ds] || 'out') : 'loading';
+        const b = el('button', 'day ' + st, String(d));
+        b.type = 'button';
+        b.disabled = !BOOKABLE.has(st);
+        if (ds === S.cfg.today) b.classList.add('today');
+        if (ds === $('date').value) {
+          b.classList.add('selected');
+          b.setAttribute('aria-pressed', 'true');
+        }
+        b.setAttribute('aria-label', `${dayTitle(ds)}${STATUS_LABEL[st] ? ' – ' + STATUS_LABEL[st] : ''}`);
+        b.addEventListener('click', () => selectDate(ds));
+        grid.append(b);
+      }
+
+      $('monthTitle').textContent = new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric', timeZone: 'UTC' })
+        .format(new Date(Date.UTC(y, m - 1, 15)));
+      $('prevMonth').disabled = S.viewYm <= S.cfg.today.slice(0, 7);
+      $('nextMonth').disabled = S.viewYm >= S.cfg.maxDate.slice(0, 7);
+    }
+
+    function selectDate(ds) {
+      $('date').value = ds;
+      if (ds.slice(0, 7) !== S.viewYm) loadMonth(ds.slice(0, 7));
+      else renderCalendar();
+      hideMsg();
+      loadDay();
+    }
+
+    async function loadDay() {
+      const date = $('date').value;
+      if (!date) return;
+      const my = ++S.seq;
+      $('dayHead').textContent = dayTitle(date);
+      $('daySection').classList.add('loading');
+      S.busyLoading = true;
+      updateSubmit();
+      try {
+        const r = await api('getBookings', $('room').value, date);
+        if (my !== S.seq) return;
+        if (!r.ok) throw new Error(r.message);
+        S.busy = r.busy;
+        S.minStart = r.minStart;
+        S.closed = r.closed;
+        renderList();
+        fillStart();
+      } catch (e) {
+        if (my !== S.seq) return;
+        S.busy = []; S.closed = true;
+        $('bookings').innerHTML = '';
+        $('bookings').append(el('li', 'empty', e.message && /[֐-׿]/.test(e.message)
+          ? e.message : 'טעינת ההזמנות נכשלה. נסו שוב.'));
+        fillStart();
+      } finally {
+        if (my === S.seq) {
+          S.busyLoading = false;
+          $('daySection').classList.remove('loading');
+          updateSubmit();
+        }
+      }
+    }
+
+    // ---------- תצוגת היום ----------
+    function renderList() {
+      const ul = $('bookings');
+      ul.innerHTML = '';
+      if (S.closed) { ul.append(el('li', 'empty', 'החדר סגור להזמנות ביום זה.')); return; }
+      if (!S.busy.length) { ul.append(el('li', 'empty', 'אין הזמנות – החדר פנוי כל היום.')); return; }
+      S.busy.forEach((b) => {
+        const li = el('li');
+        const time = el('span', 'time', b.allDay ? 'כל היום' : `${hhmm(b.start)}–${hhmm(b.end)}`);
+        if (!b.allDay) time.dir = 'ltr'; // שלא יתהפך ל-11:00–10:00
+        li.append(time);
+        li.append(el('span', 'who', b.title || 'תפוס'));
+        ul.append(li);
+      });
+    }
+
+    function renderTimeline() {
+      const tl = $('timeline');
+      tl.innerHTML = '';
+      tl.hidden = S.closed;
+      if (S.closed) return;
+      const ws = S.cfg.workStart, we = S.cfg.workEnd, span = we - ws;
+      const pos = (m) => ((m - ws) / span * 100) + '%';
+      const track = el('div', 'track');
+      const seg = (cls, s, e) => {
+        s = Math.max(s, ws); e = Math.min(e, we);
+        if (e <= s) return;
+        const d = el('div', 'seg ' + cls);
+        d.style.right = pos(s);
+        d.style.width = ((e - s) / span * 100) + '%';
+        track.append(d);
+      };
+      seg('past', ws, S.minStart);
+      S.busy.forEach((b) => seg('busy', b.start, b.end));
+      const s = parseInt($('start').value, 10), e = parseInt($('end').value, 10);
+      if (!isNaN(s) && !isNaN(e)) seg('sel', s, e);
+
+      const ticks = el('div', 'ticks');
+      const step = span > 600 ? 120 : 60;
+      for (let t = Math.ceil(ws / 60) * 60; t <= we; t += step) {
+        const sp = el('span', null, String(t / 60));
+        sp.style.right = pos(t);
+        ticks.append(sp);
+      }
+      const legend = el('div', 'legend');
+      const items = [['var(--free)', 'פנוי'], ['var(--busy)', 'תפוס'], ['var(--sel)', 'הבחירה שלך']];
+      if (S.minStart > ws) items.push(['var(--past)', 'עבר']);
+      items.forEach(([c, t]) => {
+        const item = el('span', null, t);
+        const sw = el('i'); sw.style.background = c;
+        item.prepend(sw);
+        legend.append(item);
+      });
+      tl.append(track, ticks, legend);
+    }
+
+    // ---------- בחירת שעות ----------
+    function fillStart() {
+      const sel = $('start'), prev = sel.value;
+      sel.innerHTML = '';
+      const { workStart, workEnd, slot, minLen } = S.cfg;
+      let firstOk = null;
+      if (!S.closed) {
+        for (let t = workStart; t + minLen <= workEnd; t += slot) {
+          const past = t < S.minStart, free = isFree(t, t + minLen);
+          const o = new Option(hhmm(t) + (!past && !free ? ' · תפוס' : ''), t);
+          o.disabled = past || !free;
+          sel.add(o);
+          if (!o.disabled && firstOk === null) firstOk = t;
+        }
+      }
+      if (firstOk === null) {
+        sel.innerHTML = '';
+        sel.add(new Option(S.closed ? '—' : 'אין שעות פנויות', ''));
+        sel.disabled = true;
+      } else {
+        sel.disabled = false;
+        const keep = [...sel.options].some((o) => o.value === prev && !o.disabled);
+        sel.value = keep ? prev : String(firstOk);
+      }
+      fillEnd(true);
+    }
+
+    function fillEnd(keepPrev) {
+      const sel = $('end'), prev = sel.value;
+      sel.innerHTML = '';
+      const s = parseInt($('start').value, 10);
+      if (isNaN(s)) {
+        sel.add(new Option('—', ''));
+        sel.disabled = true;
+      } else {
+        const { workEnd, slot, minLen, maxLen } = S.cfg;
+        for (let e = s + minLen; e <= Math.min(s + maxLen, workEnd); e += slot) {
+          if (!isFree(s, e)) break; // מעבר לאירוע הבא הכול חסום
+          sel.add(new Option(`${hhmm(e)} (${durLabel(e - s)})`, e));
+        }
+        sel.disabled = false;
+        const opts = [...sel.options];
+        const pick = (keepPrev && opts.find((o) => o.value === prev)) ||
+          opts.find((o) => +o.value - s >= 60) || opts[opts.length - 1];
+        sel.value = pick.value;
+      }
+      renderTimeline();
+      renderEstimate();
+      updateSubmit();
+    }
+
+    function updateSubmit() {
+      $('submit').disabled = S.busyLoading || $('start').disabled || !$('end').value;
+    }
+
+    // ---------- טופס, תקנון ותשלום ----------
+    function readForm() {
+      const eventType = $('eventType').value.replace(/\s+/g, ' ').trim();
+      const name = $('name').value.replace(/\s+/g, ' ').trim();
+      const apartment = normApartment($('apartment').value);
+      const phone = $('phone').value.trim();
+      if (eventType.length < 2) { showMsg('err', 'נא לכתוב את אופי האירוע (לדוגמה: יום הולדת).'); $('eventType').focus(); return null; }
+      if (name.length < 2) { showMsg('err', 'נא להזין שם מלא.'); $('name').focus(); return null; }
+      if (!apartment) {
+        showMsg('err', `מספר דירה חייב להיות מספר שלם בין ${S.cfg.aptMin} ל-${S.cfg.aptMax}.`);
+        $('apartment').focus(); return null;
+      }
+      if (!normPhone(phone)) { showMsg('err', 'מספר הטלפון אינו תקין. לדוגמה: 050-1234567'); $('phone').focus(); return null; }
+      const email = $('email').value.trim().toLowerCase();
+      if (!email && S.cfg.emailRequired) {
+        showMsg('err', 'נא להזין כתובת אימייל לקבלת אישור.'); $('email').focus(); return null;
+      }
+      if (email && !EMAIL_RE.test(email)) {
+        showMsg('err', 'כתובת האימייל אינה תקינה. לדוגמה: name@gmail.com'); $('email').focus(); return null;
+      }
+      if ($('start').disabled || !$('end').value) { showMsg('err', 'יש לבחור שעת התחלה ושעת סיום.'); return null; }
+      return {
+        roomId: $('room').value,
+        date: $('date').value,
+        start: hhmm(+$('start').value),
+        end: hhmm(+$('end').value),
+        eventType, name, apartment, phone, email,
+        cleaning: $('cleaning').checked,
+        website: $('website').value,
+      };
+    }
+
+    $('form').addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      hideMsg();
+      const f = readForm();
+      if (!f) return;
+      $('termsSummary').textContent =
+        `${$('room').selectedOptions[0].text} · ${dayTitle(f.date)} · בין ${f.start} ל-${f.end}` +
+        ` · ${f.eventType}` + (f.cleaning ? ' · כולל ניקיון' : '');
+      $('agree').checked = false;
+      $('declare').checked = false;
+      $('confirmBook').disabled = true;
+      openDlg($('termsDlg'));
+    });
+
+    // אפשר לסמן "קראתי את התקנון" רק אחרי פתיחת קישור המסמך
+    $('termsLink').addEventListener('click', () => {
+      $('agree').disabled = false;
+      $('termsHint').hidden = true;
+    });
+
+    // כפתור האישור פעיל רק כששתי התיבות מסומנות
+    const bothChecked = () => $('agree').checked && $('declare').checked;
+    ['agree', 'declare'].forEach((id) => $(id).addEventListener('change', () => {
+      $('confirmBook').disabled = !bothChecked() || S.saving;
+    }));
+    $('cancelTerms').addEventListener('click', () => closeDlg($('termsDlg')));
+    $('termsDlg').addEventListener('cancel', (e) => { if (S.saving) e.preventDefault(); });
+    $('closePay').addEventListener('click', () => closeDlg($('payDlg')));
+
+    $('confirmBook').addEventListener('click', async () => {
+      if (!bothChecked() || S.saving) return;
+      const f = readForm();
+      if (!f) { closeDlg($('termsDlg')); return; }
+
+      S.saving = true;
+      const btn = $('confirmBook');
+      btn.disabled = true;
+      btn.textContent = 'שומר…';
+      $('cancelTerms').disabled = true;
+      let r;
+      try {
+        r = await api('bookRoom', Object.assign(f, { termsAccepted: true, declarationAccepted: true }));
+      } catch (e) {
+        r = { ok: false, message: 'אירעה שגיאה בשמירת ההזמנה. נסו שוב.' };
+      }
+      S.saving = false;
+      btn.textContent = 'אני מסכים/ה – הזמינו';
+      $('cancelTerms').disabled = false;
+      closeDlg($('termsDlg'));
+
+      if (r.ok) {
+        store.set('name', f.name);
+        store.set('apartment', f.apartment);
+        store.set('phone', f.phone);
+        store.set('email', f.email);
+        const pe = $('payEmail');
+        pe.hidden = !f.email;
+        pe.textContent = r.emailSent
+          ? `📧 אישור עם כל הפרטים נשלח ל-${f.email}`
+          : '⚠️ לא הצלחנו לשלוח אימייל אישור, אבל ההזמנה נשמרה.';
+        const okCancel = /^https:\/\/script\.google\.com\/[^\s"'<>]+$/.test(r.cancelUrl || '');
+        if (okCancel) $('payCancelLink').href = r.cancelUrl;
+        $('payCancel').hidden = !okCancel;
+        $('payMsg').textContent = r.message;
+        const ct = S.cfg.contact || {};
+        $('confirmText').textContent = '📞 ' + (S.cfg.confirmNote || '');
+        $('contactName').textContent = String(ct.name || '').replace(/^.*-\s*/, '');
+        $('contactPhone').textContent = ct.phone || '';
+        $('contactPhone').href = 'tel:' + String(ct.phone || '').replace(/[^\d+]/g, '');
+        $('confirmNote').hidden = !S.cfg.confirmNote;
+        const pr = r.price || { total: 0, lines: [] };
+        $('payTotal').textContent = payLine(pr.total);
+        $('payLines').innerHTML = '';
+        pr.lines.forEach((l) => $('payLines').append(el('li', null, l)));
+        if (r.specialNote) $('payLines').append(el('li', 'special-note', '📜 ' + r.specialNote));
+        openDlg($('payDlg'));
+      } else {
+        showMsg('err', r.message);
+      }
+      // רענון – מציג את ההזמנה החדשה או את מה שתפס את השעה
+      delete S.months[monthKey()];
+      loadMonth(S.viewYm);
+      loadDay();
+    });
+
+    // ---------- ניווט ----------
+    $('room').addEventListener('change', () => {
+      store.set('room', $('room').value);
+      hideMsg();
+      chooseFirstDay();
+    });
+    // ה-iframe של Apps Script לא תמיד מכבד קישורי #, אז גוללים ידנית
+    $('rulesJump').addEventListener('click', (e) => {
+      e.preventDefault();
+      $('rules').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    $('prevMonth').addEventListener('click', () => loadMonth(addMonths(S.viewYm, -1)));
+    $('nextMonth').addEventListener('click', () => loadMonth(addMonths(S.viewYm, 1)));
+    $('start').addEventListener('change', () => fillEnd(false));
+    $('end').addEventListener('change', () => { renderTimeline(); renderEstimate(); });
+    $('cleaning').addEventListener('change', () => {
+      $('cleaningNote').hidden = !$('cleaning').checked;
+      renderEstimate();
+    });
+  </script>
+</body>
+</html>

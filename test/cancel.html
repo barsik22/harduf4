@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>הרדוף 4 · ביטול הזמנה</title>
+  <base target="_top">
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fff7f0;
+      --bg-blob1: #ffe3ef;
+      --bg-blob2: #fff1c9;
+      --card: #ffffff;
+      --text: #2b2140;
+      --muted: #75688a;
+      --border: #f2dfe8;
+      --accent: #e5397f;
+      --accent-2: #ff8a3d;
+      --danger: #d6334f;
+      --ok: #0f7a4a;
+      --ok-bg: #dcf7e8;
+      --err: #b4233f;
+      --err-bg: #ffe4ea;
+      --chip1: #ffe0ec;
+      --shadow: 0 6px 20px rgba(229, 57, 127, .08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1424;
+        --bg-blob1: #3a1830;
+        --bg-blob2: #33281a;
+        --card: #241c31;
+        --text: #f6eefb;
+        --muted: #bcaecd;
+        --border: #3d3150;
+        --accent: #ff5c9d;
+        --accent-2: #ff9f5a;
+        --danger: #ff6b81;
+        --ok: #7ee2ad;
+        --ok-bg: #173527;
+        --err: #ff9fb3;
+        --err-bg: #3e1a26;
+        --chip1: #4a2039;
+        --shadow: 0 6px 20px rgba(0, 0, 0, .25);
+      }
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html, body { margin: 0; }
+    body {
+      background:
+        radial-gradient(circle at 100% 0, var(--bg-blob1) 0, transparent 45%),
+        radial-gradient(circle at 0 40%, var(--bg-blob2) 0, transparent 40%),
+        var(--bg);
+      background-attachment: fixed;
+      color: var(--text);
+      font: 16px/1.5 Heebo, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+    }
+    .wrap { max-width: 520px; margin: 0 auto; padding: 16px 16px 40px; }
+    .hero {
+      padding: 18px;
+      margin-bottom: 16px;
+      border-radius: 22px;
+      color: #fff;
+      background: linear-gradient(135deg, #ff6fa8 0%, #ff8f6b 55%, #ffc65c 100%);
+      box-shadow: 0 10px 28px rgba(255, 111, 168, .35);
+    }
+    .hero h1 { font-size: 2rem; line-height: 1.1; margin: 0; text-shadow: 0 2px 8px rgba(120, 20, 60, .25); }
+    .hero p { margin: 4px 0 0; font-weight: 700; font-size: 1.1rem; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    h2 { font-size: 1.15rem; margin: 0 0 12px; }
+    .details { background: var(--chip1); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; }
+    .details div { display: flex; gap: 10px; padding: 2px 0; }
+    .details span:first-child { color: var(--muted); min-width: 64px; }
+    .details span:last-child { font-weight: 700; }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 50px;
+      margin-top: 10px;
+      font: inherit;
+      font-weight: 700;
+      font-size: 1.05rem;
+      border-radius: 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn.danger { border: 0; background: var(--danger); color: #fff; }
+    .btn.ghost { border: 1px solid var(--border); background: transparent; color: var(--text); }
+    .btn:disabled { opacity: .5; cursor: default; }
+    .msg { padding: 12px 14px; border-radius: 10px; font-weight: 500; margin-top: 12px; }
+    .msg.ok { background: var(--ok-bg); color: var(--ok); }
+    .msg.err { background: var(--err-bg); color: var(--err); }
+    .muted { color: var(--muted); font-size: .92rem; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <h1>הרדוף 4</h1>
+      <p>ביטול הזמנת חדר הדיירים</p>
+    </header>
+
+    <section class="card">
+      <p id="loading" class="muted">טוען את פרטי ההזמנה…</p>
+
+      <div id="confirm" hidden>
+        <h2>לבטל את ההזמנה הזו?</h2>
+        <div class="details" id="details"></div>
+        <p class="muted">אחרי הביטול החדר ישוחרר ואחרים יוכלו להזמין אותו. לא ניתן לבטל את הביטול.</p>
+        <button type="button" class="btn danger" id="cancelBtn">כן, בטלו את ההזמנה</button>
+        <a class="btn ghost" id="keepLink">לא, השאירו את ההזמנה</a>
+      </div>
+
+      <div class="msg" id="msg" role="status" aria-live="polite" hidden></div>
+      <a class="btn ghost" id="homeLink" hidden>חזרה לדף ההזמנות</a>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let code = '';
+
+    // באתר החיצוני deploy.js ממלא כאן את כתובת ה-API; בתוך Apps Script נשאר ריק
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzXDiYX2l8PM6m6oT3aUiSpIcdeAfnEsoyEmYjaXEFrKd23GSIck-RQ4P0XaVD9RfZcRA/exec';
+    const IN_GAS = !!(window.google && google.script && google.script.run);
+    function api(fn, ...args) {
+      if (IN_GAS) {
+        return new Promise((resolve, reject) =>
+          google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[fn](...args));
+      }
+      // בלי עוגיות – כך החשבונות המחוברים בדפדפן לא משפיעים
+      return fetch(API_URL, {
+        method: 'POST', credentials: 'omit', redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ fn, args }),
+      }).then((r) => r.json()).then((r) => {
+        if (!r.ok) throw new Error(r.error || 'server');
+        return r.result;
+      });
+    }
+    function getParams(cb) {
+      if (IN_GAS) return google.script.url.getLocation((loc) => cb(loc.parameter || {}));
+      cb(Object.fromEntries(new URLSearchParams(location.search)));
+    }
+    function showMsg(kind, text) {
+      const m = $('msg');
+      m.className = 'msg ' + kind;
+      m.textContent = text;
+      m.hidden = false;
+    }
+    function dayTitle(ds) {
+      return new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+        .format(new Date(ds + 'T12:00:00Z'));
+    }
+    function row(label, value) {
+      const d = document.createElement('div');
+      const a = document.createElement('span');
+      const b = document.createElement('span');
+      a.textContent = label;
+      b.textContent = value;
+      d.append(a, b);
+      return d;
+    }
+    function done(kind, text) {
+      $('loading').hidden = true;
+      $('confirm').hidden = true;
+      showMsg(kind, text);
+      $('homeLink').hidden = false;
+    }
+
+    getParams(async (params) => {
+      code = params.cancel || '';
+      try {
+        const r = await api('getCancelInfo', code);
+        $('loading').hidden = true;
+        if (!r.ok) return done('err', r.message);
+        if (r.past) return done('err', 'לא ניתן לבטל הזמנה שכבר התחילה או הסתיימה.');
+        const det = $('details');
+        det.append(
+          row('חדר', r.room),
+          row('תאריך', dayTitle(r.date)),
+          row('שעות', `${r.start} עד ${r.end}`),
+          row('הזמנה', r.title),
+        );
+        $('confirm').hidden = false;
+      } catch (e) {
+        done('err', 'טעינת ההזמנה נכשלה. רעננו את הדף.');
+      }
+    });
+
+    // הקישור "חזרה" מוביל לדף ההזמנות
+    api('getAppUrl').then((url) => {
+      if (/^https:\/\/[^\s"'<>]+$/.test(url)) {
+        $('keepLink').href = url;
+        $('homeLink').href = url;
+      }
+    }).catch(() => {});
+
+    $('cancelBtn').addEventListener('click', async () => {
+      const btn = $('cancelBtn');
+      btn.disabled = true;
+      btn.textContent = 'מבטל…';
+      try {
+        const r = await api('cancelBooking', code);
+        done(r.ok ? 'ok' : 'err', r.ok ? r.message + ' אישור נשלח לאימייל שלכם.' : r.message);
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'כן, בטלו את ההזמנה';
+        showMsg('err', 'הביטול נכשל. נסו שוב.');
+      }
+    });
+  </script>
+</body>
+</html>
